@@ -1,5 +1,5 @@
 var Pizza_Count = 1;
-var Pizza_ArrayId = [];
+var Pizza_List = [];
 
 const c = (el) => {
     return document.querySelector(el)
