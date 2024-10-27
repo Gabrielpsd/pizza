@@ -1,25 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <title>Pizzaria Sono </title>
-    <link rel="stylesheet" href="style.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css?family=Hepta+Slab:400,700|Lato:400,700&display=swap" rel="stylesheet">
-</head>
+
 <body>
     <div class="models">
-        <div class="pizza-item">
-            <a href="">
-                <div class="pizza-item--img"><img src="" /></div>
-                <div class="pizza-item--add">+</div>
-            </a>
-            <div class="pizza-item--price">R$ </div>
-            <div class="pizza-item--name">--</div>
-            <div class="pizza-item--desc">--</div>
-        </div>
-
-        
+        <button id="send_data"></button> 
         <div class="cart--item">
             <img src="" />
             <div class="cart--item-nome">--</div>
@@ -34,8 +18,50 @@
         <div class="menu-openner" ><span>0</span>🛒</div>
     </header>
     <main>
-        <h1>Pizzas</h1>
-        <div class="pizza-area"></div>
+        <div>
+            <?php 
+                include("header.php")
+            ?>
+        </div>
+        <div class="pizza-area">
+            <?php 
+                $configs = include('config.php');
+                
+                $conection = mysqli_connect($configs->host,$configs->username,$configs->pass,$configs->database);
+
+                if(!$conection)
+                {
+                    die("Connection failed: ". mysqli_connect_error());
+                }
+                else
+                {
+                    $sql = 'SELECT `id`, `name`, `img_path`, `price`, `description` FROM `pizzas` WHERE 1; ';
+                    $result = mysqli_query($conection,$sql);
+
+                    if(mysqli_num_rows($result) > 0)
+                    {
+                        while($row = mysqli_fetch_assoc($result))
+                        {
+                            echo <<< PIZZAS
+                            <div class="pizza-item" id=$row[id]>
+                                <a href="">
+                                    <div class="pizza-item--img"><img src="assets/images/$row[img_path]" /></div>
+                                    <div class="pizza-item--add">+</div>
+                                </a>
+                                <div class="pizza-item--price">R$ $row[price]</div>
+                                <div class="pizza-item--name">$row[name]</div>
+                                <div class="pizza-item--desc">$row[description]</div>
+                            </div>
+                            PIZZAS;
+                        }
+                    }
+                    else 
+                    {
+                        echo "Results 0";
+                    }
+                }
+            ?>
+        </div>
     </main>
     <aside>
         <div class="cart--area">
@@ -92,8 +118,6 @@
             </div>
         </div>
     </div>
-
-    <script type="text/javascript" src="pizzas.js"></script>
-    <script type="text/javascript" src="script.js"></script>
+    <script type="text/javascript" src="script.js?t=1730030153534"></script>
 </body>
 </html>

@@ -1,8 +1,13 @@
 var Pizza_Count = 1;
 var Pizza_List = [];
+let nomesPizzas = []
 
 const c = (el) => {
     return document.querySelector(el)
+}
+
+const idGet = (el) => {
+    return document.getElementById(el)
 }
 
 function fecharModal() {
@@ -36,80 +41,53 @@ c('.menu-closer').addEventListener('click', () => {
     c('aside').style.left = '100vw'
 })
 
-pizzaJson.map((item, index) => {
-    let pizza_item = c('.models .pizza-item').cloneNode(true)
-
-    c('.pizza-area').appendChild(pizza_item)
-    pizza_item.setAttribute('data-key', index);
-
-    pizza_item.querySelector('.pizza-item--name').innerHTML = item.name
-    pizza_item.querySelector('.pizza-item--price').innerHTML += item.price
-    pizza_item.querySelector('.pizza-item--desc').innerHTML = item.description
-    pizza_item.querySelector('.pizza-item--img img').src = item.img
+let pizzas = document.querySelectorAll('.pizza-item')
 
 
-
-    pizza_item.querySelector('a').addEventListener('click', (e) => {
+/* abre modal de seleção das pizzas */ 
+pizzas.forEach((element)=>{
+    console.log(element)
+    nomesPizzas.push({id:element.id, name: element.childNodes[5].innerHTML})
+    element.childNodes[1].addEventListener('click', (e)=>{
         e.preventDefault()
-        let key = e.target.closest('.pizza-item').getAttribute('data-key')
-        modkey = key;
-
-
+        modkey = element.id -1 ;
         c('.pizzaWindowArea').style.opacity = 0;
         c('.pizzaWindowArea').style.display = 'flex';
         setTimeout(() => {
             c('.pizzaWindowArea').style.opacity = 1;
         }, 200)
-        c('.pizzaWindowArea .pizzaInfo--desc').innerHTML = item.description;
-        c('.pizzaWindowArea .pizzaInfo--actualPrice').innerHTML = 'R$ ' + item.price;
-        price = item.price;
-        imagem = item.img;
-        c('.pizzaWindowArea .pizzaInfo h1').innerHTML = item.name;
-        c('.pizzaWindowBody .pizzaBig img').src = item.img
-        c('div[data-key="0"] span').innerHTML = item.sizes[0]
-        c('div[data-key="1"] span').innerHTML = item.sizes[1]
-        c('div[data-key="2"] span').innerHTML = item.sizes[2]
+        c('.pizzaWindowArea .pizzaInfo--desc').innerHTML = element.childNodes[5].innerHTML;
+        c('.pizzaWindowArea .pizzaInfo--actualPrice').innerHTML = element.childNodes[3].innerHTML;
+        c('.pizzaWindowArea .pizzaInfo h1').innerHTML = element.childNodes[5].innerHTML;
+        c('.pizzaWindowBody .pizzaBig img').src =  element.childNodes[1].childNodes[1].childNodes[0].currentSrc
+        price = parseFloat(element.childNodes[3].innerHTML.substring(2))
+        imagem = element.childNodes[1].childNodes[1].childNodes[0].currentSrc
+        c('div[data-key="0"] span').innerHTML = '320 g'
+        c('div[data-key="1"] span').innerHTML = '530g'
+        c('div[data-key="2"] span').innerHTML = '860g'
 
-        //Botão cor
-        document.querySelectorAll('.pizzaInfo--size').forEach((e) => {
+         //Botão cor
+         document.querySelectorAll('.pizzaInfo--size').forEach((e) => {
 
             e.addEventListener('click', () => {
                 let a = c('.selected');
                 a.classList.remove('selected');
                 e.classList.add('selected');
-
-
-
-
-
             })
 
         })
 
+    })   
 
-        c('.pizzaWindowArea .pizzaInfo--cancelButton').addEventListener('click', fecharModal);
-        c('.pizzaWindowBody .pizzaInfo--cancelMobileButton').addEventListener('click', fecharModal)
-
-
-
-    })
+    c('.pizzaWindowArea .pizzaInfo--cancelButton').addEventListener('click', fecharModal);
+    c('.pizzaWindowBody .pizzaInfo--cancelMobileButton').addEventListener('click', fecharModal) 
 })
-
-
-
-
-
-
-// botão mais
 
 c('.pizzaInfo--qtarea .pizzaInfo--qtmais').addEventListener('click', () => {
 
     Pizza_Count += 1;
-    console.log(Pizza_Count)
 
     c('.pizzaInfo--qtarea .pizzaInfo--qt').innerHTML = Pizza_Count;
-
-
 
 })
 
@@ -135,13 +113,24 @@ c('.pizzaInfo--qtarea .pizzaInfo--qtmenos').addEventListener('click', () => {
 // Botão para Finalizar
 
 c('.cart--finalizar').addEventListener('click', () => {
-    alert('Compra realizada com sucesso!\n')
+    const formElement = document.createElement('form') 
+    formElement.method = 'post'
+    formElement.action = "http://localhost/pizza/insertPizzas.php"
+    Pizza_List.forEach((element)=>{
+        var hiddenField = document.createElement('input');
+        hiddenField.type = 'hidden';
+        hiddenField.name = element.id;
+        hiddenField.value = JSON.stringify(element);
+        formElement.appendChild(hiddenField)
+    }
+    )
+
+    document.body.appendChild(formElement)
+    formElement.submit()
 
     c('.menu-openner span').innerHTML = 0;
     c('aside').classList.remove('show')
     c('aside').style.left = '100vw'
-
-
 })
 
 
@@ -162,47 +151,35 @@ c('.pizzaInfo--addButton').addEventListener('click', () => {
         tamanho = 'P'
     }
 
-
-
-
     if (Pizza_Count > 0) {
 
-        c('header .menu-openner span').innerHTML = parseInt(c('header .menu-openner span').textContent) + Pizza_Count;
-
-
+        c('header .menu-openner span').innerHTML = parseInt(c('header .menu-openner span').textContent) + Pizza_Count;  
+        
+        console.log(modkey)
+        console.log(nomesPizzas[modkey])
         if (Pizza_List.find((a) => {
-            return a.name === pizzaJson[modkey].name && a.size === tamanho
+            
+            return a.name === nomesPizzas[modkey].name && a.size === tamanho
         })) {
 
-            let index = Pizza_List.indexOf(Pizza_List.find((a) => {
-                return a.name === pizzaJson[modkey].name && a.size == tamanho
+                let index = Pizza_List.indexOf(Pizza_List.find((a) => {
+                    console.log(a)
+                    console.log(modkey)
 
+                return a.name === nomesPizzas[modkey].name && a.size == tamanho
+                
             }))
-
 
             Pizza_List[index].quantidade++;
             c('.cart--area .cart--item--qt').innerHTML = Pizza_List[index].quantidade;
-
-
-
         }
         else {
-            Pizza_List.push({ name: pizzaJson[modkey].name, quantidade: Pizza_Count, size: tamanho, imagem: imagem, price: price, id: pizzaJson[modkey].id })
+            Pizza_List.push({ name: nomesPizzas[modkey].name, quantidade: Pizza_Count, size: tamanho, imagem: imagem, price: price, id: nomesPizzas[modkey].id })
 
-            console.log(Pizza_List)
             carrinho()
-
-
-
         }
         fecharModal();
-
-
     }
-
-
-
-
 
 })
 

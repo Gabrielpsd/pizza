@@ -1,0 +1,17 @@
+
+    nav{
+        border-radius: 30px;
+        padding: 10px;
+    }
+    .rounded
+    {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    img{
+        border-radius: 10%;
+    }
+    h1{
+        padding: 10px;
+    }
