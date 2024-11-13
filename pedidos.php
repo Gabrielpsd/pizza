@@ -21,7 +21,7 @@
         $result = mysqli_fetch_all($result);
         $actualNumber = $result[0][0];
         
-        for($controller = 0; $controller <= $actualNumber; $controller++)
+        for($controller = 1; $controller <= $actualNumber; $controller++)
         {
             
             $sql = 'SELECT `id`, `id_pedido`, `Pizza`, `preco`, `img_path`, `size`, `quantidade` FROM `pedidos_pizzas` WHERE id_pedido ='. $controller;
